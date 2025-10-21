@@ -4,6 +4,8 @@ import axios from "axios";
 import TopBar from "../components/TopBar"; // new component
 import { Plus } from "lucide-react";
 import "./Dashboard.css";
+const API_URL = import.meta.env.VITE_API_URL;
+
 
 const Dashboard = () => {
   const [username, setUsername] = useState("");
@@ -13,7 +15,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchUserAndLogs = async () => {
       try {
-        const checkRes = await axios.get("http://localhost:5000/check", {
+        const checkRes = await axios.get(`${API_URL}/check`, {
           withCredentials: true,
         });
 
@@ -24,7 +26,7 @@ const Dashboard = () => {
 
         setUsername(checkRes.data.username);
 
-        const logsRes = await axios.get("http://localhost:5000/logs", {
+        const logsRes = await axios.get(`${API_URL}/logs`, {
           withCredentials: true,
         });
 

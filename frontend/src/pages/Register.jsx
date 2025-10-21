@@ -2,11 +2,14 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LogoHeader from "../components/LogoHeader";
 import "./Register.css";
+const API_URL = import.meta.env.VITE_API_URL;
+console.log("API_URL is:", API_URL);
 
 const Register = () => {
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
+  console.log("API_URL is:", API_URL);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -17,7 +20,7 @@ const Register = () => {
 
     try {
       // 1️⃣ Register the user
-      const res = await fetch("http://localhost:5000/register", {
+      const res = await fetch(`${API_URL}/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -32,7 +35,7 @@ const Register = () => {
       }
 
       // 2️⃣ Automatically log in after registration
-      const loginRes = await fetch("http://localhost:5000/login", {
+      const loginRes = await fetch(`${API_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

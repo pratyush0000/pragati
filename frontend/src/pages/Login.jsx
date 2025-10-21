@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LogoHeader from "../components/LogoHeader";
 import "./Login.css";
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Login = () => {
   const [formData, setFormData] = useState({ username: "", password: "" });
@@ -16,7 +17,7 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:5000/login", {
+      const res = await fetch(`${API_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import TopBar from "../components/TopBar";
 import "./NewNote.css";
+const API_URL = import.meta.env.VITE_API_URL;
 
 const NewNote = () => {
   const [username, setUsername] = useState("");
@@ -14,7 +15,7 @@ const NewNote = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/check", {
+        const res = await axios.get(`${API_URL}/check`, {
           withCredentials: true,
         });
 
@@ -41,7 +42,7 @@ const NewNote = () => {
 
     try {
       await axios.post(
-        "http://localhost:5000/add",
+        `${API_URL}/add`,
         { filename, content },
         { withCredentials: true }
       );

@@ -3,6 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import TopBar from "../components/TopBar";
 import "./EditNote.css";
+const API_URL = import.meta.env.VITE_API_URL;
+
 
 const EditNote = () => {
   const { id } = useParams();
@@ -15,7 +17,7 @@ const EditNote = () => {
   useEffect(() => {
     const fetchUserAndNote = async () => {
       try {
-        const checkRes = await axios.get("http://localhost:5000/check", {
+        const checkRes = await axios.get(`${API_URL}/check`, {
           withCredentials: true,
         });
 
@@ -25,7 +27,7 @@ const EditNote = () => {
         }
         setUsername(checkRes.data.username);
 
-        const noteRes = await axios.get(`http://localhost:5000/logs/${id}`, {
+        const noteRes = await axios.get(`${API_URL}/logs/${id}`, {
           withCredentials: true,
         });
         setNote(noteRes.data);
@@ -48,7 +50,7 @@ const EditNote = () => {
     e.preventDefault();
     try {
       await axios.put(
-        `http://localhost:5000/logs/${id}`,
+        `${API_URL}/logs/${id}`,
         { filename: note.filename, content: note.content },
         { withCredentials: true }
       );
@@ -64,7 +66,7 @@ const EditNote = () => {
     if (!window.confirm("Are you sure you want to delete this note?")) return;
 
     try {
-      await axios.delete(`http://localhost:5000/delete/${id}`, { withCredentials: true });
+      await axios.delete(`${API_URL}/delete/${id}`, { withCredentials: true });
       setMessage("Note deleted successfully!");
       setTimeout(() => navigate("/dashboard"), 800);
     } catch (err) {
