@@ -28,7 +28,8 @@ const Dashboard = () => {
           withCredentials: true,
         });
 
-        setLogs(logsRes.data.reverse());
+        // setLogs(logsRes.data.reverse());
+        setLogs(logsRes.data.sort((a, b) => b.id - a.id));
       } catch (err) {
         console.error(err);
         navigate("/login");

@@ -4,6 +4,7 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import NewNote from "./pages/NewNote";
+import EditNote from "./pages/EditNote";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
+
         <Route
           path="/dashboard"
           element={
@@ -21,11 +23,21 @@ function App() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/new"
           element={
             <ProtectedRoute>
               <NewNote />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/note/:id"
+          element={
+            <ProtectedRoute>
+              <EditNote />
             </ProtectedRoute>
           }
         />

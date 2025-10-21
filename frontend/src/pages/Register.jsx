@@ -1,10 +1,12 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import LogoHeader from "../components/LogoHeader";
 import "./Register.css";
 
 const Register = () => {
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -14,22 +16,41 @@ const Register = () => {
     e.preventDefault();
 
     try {
+      // 1️⃣ Register the user
       const res = await fetch("http://localhost:5000/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
         credentials: "include",
-        });
-
+      });
 
       const data = await res.json();
-      if (res.ok) {
-        setMessage("registered successfully!");
+
+      if (!res.ok) {
+        setMessage(data.error || "Registration failed");
+        return;
+      }
+
+      // 2️⃣ Automatically log in after registration
+      const loginRes = await fetch("http://localhost:5000/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+        credentials: "include",
+      });
+
+      const loginData = await loginRes.json();
+
+      if (loginRes.ok) {
+        localStorage.setItem("username", formData.username); // store username
+        setMessage("Registered and logged in successfully!");
+        setTimeout(() => navigate("/dashboard"), 500);
       } else {
-        setMessage(`${data.error || "registration failed"}`);
+        setMessage(loginData.error || "Login failed after registration");
       }
     } catch (err) {
-      setMessage("server error, please try again later.");
+      console.error(err);
+      setMessage("Server error, please try again later.");
     }
   };
 
@@ -37,11 +58,11 @@ const Register = () => {
     <div className="register-container">
       <LogoHeader />
       <div className="register-box">
-        <h2 className="register-title">new user?</h2>
+        <h2 className="register-title">New User?</h2>
 
         <form className="register-form" onSubmit={handleSubmit}>
           <label>
-            username:
+            Username:
             <input
               type="text"
               name="username"
@@ -52,7 +73,7 @@ const Register = () => {
           </label>
 
           <label>
-            password:
+            Password:
             <input
               type="password"
               name="password"
@@ -63,7 +84,7 @@ const Register = () => {
           </label>
 
           <p className="warning-text">
-            *there is no forget password, so please don’t forget your password :)
+            *There is no forget password, so please don’t forget your password :)
           </p>
 
           <button type="submit" className="register-btn">

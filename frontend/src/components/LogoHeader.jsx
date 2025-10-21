@@ -1,9 +1,20 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import "../global.css";
 
-const LogoHeader = () => {
+const LogoHeader = ({ username }) => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    if (username) {
+      navigate("/dashboard"); // logged in
+    } else {
+      navigate("/"); // not logged in
+    }
+  };
+
   return (
-    <header className="logo-header">
+    <header className="logo-header" onClick={handleClick} style={{ cursor: "pointer" }}>
       <img
         src="/src/assets/pragatilogo.png"
         alt="Pragati Logo"

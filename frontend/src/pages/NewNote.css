@@ -1,17 +1,21 @@
-.newnote-container {
+/* page wrapper to allow TopBar full width */
+.newnote-page {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  align-items: stretch; /* TopBar takes full width */
   background-color: #0d0d0d;
   color: #ffffff;
 }
 
-.newnote-main {
-  flex: 1;
+/* container to center form */
+.newnote-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 2rem;
+  margin-top: 4rem; /* leave space for sticky topbar */
+  width: 100%;
 }
 
 .newnote-title {
@@ -20,7 +24,8 @@
   color: #ffffff;
 }
 
-.newnote-filename {
+.newnote-filename,
+.newnote-content {
   width: 100%;
   max-width: 600px;
   padding: 0.8rem;
@@ -32,28 +37,15 @@
   font-size: 1rem;
 }
 
-.newnote-filename:focus {
+.newnote-filename:focus,
+.newnote-content:focus {
   outline: none;
   border-color: #007bff;
 }
 
 .newnote-content {
-  width: 100%;
-  max-width: 600px;
   height: 300px;
-  padding: 0.8rem;
-  border-radius: 10px;
-  border: 1px solid #555;
-  background-color: #1a1a1a;
-  color: #ffffff;
-  font-size: 1rem;
   resize: vertical;
-  margin-bottom: 1rem;
-}
-
-.newnote-content:focus {
-  outline: none;
-  border-color: #007bff;
 }
 
 .newnote-save-btn {

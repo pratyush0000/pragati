@@ -20,12 +20,15 @@ def register_routes(app):
         return jsonify({'error': 'Unauthorized', 'logged_in': False}), 401
 
     # --------------------------
-    # Routes
+    # Home route
     # --------------------------
     @app.route('/')
     def home():
         return "📘 Progress Tracker API is running!"
 
+    # --------------------------
+    # Register new user
+    # --------------------------
     @app.route('/register', methods=['POST'])
     def register():
         data = request.get_json()
@@ -44,6 +47,9 @@ def register_routes(app):
         db.session.commit()
         return jsonify({'message': 'User registered successfully'}), 201
 
+    # --------------------------
+    # Login user
+    # --------------------------
     @app.route('/login', methods=['POST'])
     def login():
         data = request.get_json()
@@ -58,7 +64,7 @@ def register_routes(app):
         return jsonify({'message': f'Welcome {user.username}!'}), 200
 
     # --------------------------
-    # Logout
+    # Logout user
     # --------------------------
     @app.route('/logout', methods=['POST'])
     @login_required
@@ -67,7 +73,7 @@ def register_routes(app):
         return jsonify({'message': 'Logged out successfully'})
 
     # --------------------------
-    # Add a log
+    # Add a log/note
     # --------------------------
     @app.route('/add', methods=['POST'])
     @login_required
@@ -89,10 +95,51 @@ def register_routes(app):
     @login_required
     def get_logs():
         logs = Log.query.filter_by(user_id=current_user.id).all()
+        # newest first
+        logs_sorted = sorted(logs, key=lambda l: l.id, reverse=True)
         return jsonify([
             {'id': l.id, 'filename': l.filename, 'content': l.content}
-            for l in logs
+            for l in logs_sorted
         ])
+
+    # --------------------------
+    # Get a single log by ID
+    # --------------------------
+    @app.route('/logs/<int:id>', methods=['GET'])
+    @login_required
+    def get_single_log(id):
+        log = Log.query.filter_by(id=id, user_id=current_user.id).first()
+        if not log:
+            return jsonify({'error': 'Note not found'}), 404
+        return jsonify({'id': log.id, 'filename': log.filename, 'content': log.content})
+
+    # --------------------------
+    # Update a log by ID
+    # --------------------------
+    @app.route('/logs/<int:id>', methods=['PUT'])
+    @login_required
+    def update_log(id):
+        log = Log.query.filter_by(id=id, user_id=current_user.id).first()
+        if not log:
+            return jsonify({'error': 'Note not found'}), 404
+
+        data = request.get_json()
+        filename = data.get('filename')
+        content = data.get('content')
+
+        if filename:
+            log.filename = filename
+        if content:
+            log.content = content
+
+        db.session.commit()
+
+        return jsonify({
+            'message': 'Note updated successfully',
+            'id': log.id,
+            'filename': log.filename,
+            'content': log.content
+        })
 
     # --------------------------
     # Delete a log
@@ -115,16 +162,3 @@ def register_routes(app):
         if current_user.is_authenticated:
             return jsonify({'logged_in': True, 'username': current_user.username})
         return jsonify({'logged_in': False})
-    
-
-    # --------------------------
-    # Get a note by ID
-    # --------------------------
-    @app.route('/logs/<int:id>', methods=['GET'])
-    @login_required
-    def get_single_log(id):
-        log = Log.query.filter_by(id=id, user_id=current_user.id).first()
-        if not log:
-            return jsonify({'error': 'Note not found'}), 404
-        return jsonify({'id': log.id, 'filename': log.filename, 'content': log.content})
-

@@ -1,14 +1,37 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import TopBar from "../components/TopBar"; // reuse the top bar component
+import TopBar from "../components/TopBar";
 import "./NewNote.css";
 
 const NewNote = () => {
+  const [username, setUsername] = useState("");
   const [filename, setFilename] = useState("");
   const [content, setContent] = useState("");
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/check", {
+          withCredentials: true,
+        });
+
+        if (!res.data.logged_in) {
+          navigate("/login");
+          return;
+        }
+
+        setUsername(res.data.username);
+      } catch (err) {
+        console.error(err);
+        navigate("/login");
+      }
+    };
+
+    fetchUser();
+  }, [navigate]);
 
   const handleSave = async () => {
     if (!filename || !content) {
@@ -31,11 +54,11 @@ const NewNote = () => {
   };
 
   return (
-    <div className="newnote-container">
-      {/* Top bar */}
-      <TopBar />
+    <div className="newnote-page">
+      {/* ✅ Top bar with username */}
+      <TopBar username={username} />
 
-      <main className="newnote-main">
+      <div className="newnote-container">
         <h2 className="newnote-title">Create New Note</h2>
 
         <input
@@ -58,7 +81,7 @@ const NewNote = () => {
         <button className="newnote-save-btn" onClick={handleSave}>
           Save Note
         </button>
-      </main>
+      </div>
     </div>
   );
 };

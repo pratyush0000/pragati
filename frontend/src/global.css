@@ -56,3 +56,42 @@ body {
   font-size: 1.5rem;
 }
 
+
+
+/* ----- logout ----- */
+.logout-popup {
+  position: absolute;
+  top: 50px; /* adjust according to TopBar height */
+  right: 10px;
+  background-color: #1a1a1a;
+  color: white;
+  border: 1px solid #555;
+  border-radius: 8px;
+  padding: 1rem;
+  z-index: 1000;
+  min-width: 180px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.logout-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 0.5rem;
+}
+
+.logout-buttons button {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #fff;
+  background-color: #0d0d0d;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.logout-buttons button:hover {
+  background-color: white;
+  color: #0d0d0d;
+}
+
