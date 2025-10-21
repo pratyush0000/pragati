@@ -162,3 +162,8 @@ def register_routes(app):
         if current_user.is_authenticated:
             return jsonify({'logged_in': True, 'username': current_user.username})
         return jsonify({'logged_in': False})
+
+
+    @app.route("/healthz")
+    def health():
+        return "OK"
