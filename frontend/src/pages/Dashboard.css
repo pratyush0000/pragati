@@ -1,0 +1,90 @@
+.dashboard-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #0d0d0d;
+  color: #ffffff;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #1a1a1a;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+}
+
+.logo-container .logo {
+  height: 40px;
+}
+
+.username {
+  font-weight: 500;
+  font-size: 1.1rem;
+  color: #ffffff;
+}
+
+/* Notes grid */
+.notes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 220px)); /* fixed max width for cards */
+  gap: 1.5rem;
+  padding: 2rem;
+  justify-content: center; /* center the grid items */
+}
+
+
+/* Note cards */
+.note-card {
+  background-color: #1a1a1a;
+  border-radius: 16px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 150px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+
+.note-card:hover {
+  background-color: #222222;
+  transform: translateY(-3px);
+}
+
+/* New note styling */
+.new-note {
+  border: 2px dashed #555;
+  justify-content: center;
+  align-items: center;
+}
+
+.plus-icon {
+  width: 40px;
+  height: 40px;
+  color: #888;
+}
+
+.new-text {
+  margin-top: 0.5rem;
+  color: #888;
+  font-size: 1rem;
+}
+
+.note-content {
+  font-size: 0.95rem;
+  color: #ccc;
+  flex-grow: 1;
+  overflow: hidden;
+  line-height: 1.2rem;
+}
+
+.note-filename {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  text-align: right;
+  font-style: italic;
+  color: #aaa;
+}

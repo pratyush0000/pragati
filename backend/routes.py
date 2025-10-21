@@ -1,4 +1,3 @@
-# backend/routes.py
 from flask import Flask, request, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -6,10 +5,23 @@ from models import User, Log
 from extensions import db, login_manager
 
 def register_routes(app):
+    # --------------------------
+    # User loader for Flask-Login
+    # --------------------------
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(int(user_id))
 
+    # --------------------------
+    # Unauthorized handler (for API)
+    # --------------------------
+    @login_manager.unauthorized_handler
+    def unauthorized_callback():
+        return jsonify({'error': 'Unauthorized', 'logged_in': False}), 401
+
+    # --------------------------
+    # Routes
+    # --------------------------
     @app.route('/')
     def home():
         return "📘 Progress Tracker API is running!"
@@ -38,11 +50,25 @@ def register_routes(app):
         username = data.get('username')
         password = data.get('password')
         user = User.query.filter_by(username=username).first()
+
         if not user or not check_password_hash(user.password_hash, password):
             return jsonify({'error': 'Invalid credentials'}), 401
+
         login_user(user, remember=True)
         return jsonify({'message': f'Welcome {user.username}!'}), 200
 
+    # --------------------------
+    # Logout
+    # --------------------------
+    @app.route('/logout', methods=['POST'])
+    @login_required
+    def logout():
+        logout_user()
+        return jsonify({'message': 'Logged out successfully'})
+
+    # --------------------------
+    # Add a log
+    # --------------------------
     @app.route('/add', methods=['POST'])
     @login_required
     def add_log():
@@ -56,12 +82,21 @@ def register_routes(app):
         db.session.commit()
         return jsonify({'message': 'Log added successfully'}), 201
 
+    # --------------------------
+    # Get all logs for current user
+    # --------------------------
     @app.route('/logs', methods=['GET'])
     @login_required
     def get_logs():
         logs = Log.query.filter_by(user_id=current_user.id).all()
-        return jsonify([{'id': l.id, 'filename': l.filename, 'content': l.content} for l in logs])
+        return jsonify([
+            {'id': l.id, 'filename': l.filename, 'content': l.content}
+            for l in logs
+        ])
 
+    # --------------------------
+    # Delete a log
+    # --------------------------
     @app.route('/delete/<int:id>', methods=['DELETE'])
     @login_required
     def delete_log(id):
@@ -72,8 +107,24 @@ def register_routes(app):
         db.session.commit()
         return jsonify({'message': 'Log deleted successfully'})
 
-    @app.route('/logout', methods=['POST'])
+    # --------------------------
+    # Check login status
+    # --------------------------
+    @app.route('/check', methods=['GET'])
+    def check_status():
+        if current_user.is_authenticated:
+            return jsonify({'logged_in': True, 'username': current_user.username})
+        return jsonify({'logged_in': False})
+    
+
+    # --------------------------
+    # Get a note by ID
+    # --------------------------
+    @app.route('/logs/<int:id>', methods=['GET'])
     @login_required
-    def logout():
-        logout_user()
-        return jsonify({'message': 'Logged out successfully'})
+    def get_single_log(id):
+        log = Log.query.filter_by(id=id, user_id=current_user.id).first()
+        if not log:
+            return jsonify({'error': 'Note not found'}), 404
+        return jsonify({'id': log.id, 'filename': log.filename, 'content': log.content})
+

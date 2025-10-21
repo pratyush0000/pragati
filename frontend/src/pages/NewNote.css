@@ -1,0 +1,78 @@
+.newnote-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #0d0d0d;
+  color: #ffffff;
+}
+
+.newnote-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+}
+
+.newnote-title {
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  color: #ffffff;
+}
+
+.newnote-filename {
+  width: 100%;
+  max-width: 600px;
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+  border-radius: 10px;
+  border: 1px solid #555;
+  background-color: #1a1a1a;
+  color: #ffffff;
+  font-size: 1rem;
+}
+
+.newnote-filename:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.newnote-content {
+  width: 100%;
+  max-width: 600px;
+  height: 300px;
+  padding: 0.8rem;
+  border-radius: 10px;
+  border: 1px solid #555;
+  background-color: #1a1a1a;
+  color: #ffffff;
+  font-size: 1rem;
+  resize: vertical;
+  margin-bottom: 1rem;
+}
+
+.newnote-content:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.newnote-save-btn {
+  padding: 0.8rem 2rem;
+  background-color: #007bff;
+  color: #ffffff;
+  font-size: 1rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.newnote-save-btn:hover {
+  background-color: #0056b3;
+}
+
+.newnote-msg {
+  margin: 0.5rem 0;
+  color: #f39c12;
+  font-size: 0.9rem;
+}
