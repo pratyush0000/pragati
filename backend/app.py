@@ -2,24 +2,28 @@ from flask import Flask
 from flask_cors import CORS
 from extensions import db, login_manager
 from routes import register_routes
+import os
 
 def create_app():
     app = Flask(__name__)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///progress.db'
-    app.config['SECRET_KEY'] = 'supersecretkey'
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'supersecretkey')
 
-    # ✅ Allow React frontend to communicate with Flask using cookies
+    # ✅ Allow React frontend + production domain to access
     CORS(
         app,
         supports_credentials=True,
-        origins=["http://localhost:5173"]
+        origins=[
+            "http://localhost:5173",          # local dev
+            "https://your-frontend-name.onrender.com"  # Render frontend URL
+        ]
     )
 
-    # ✅ Important cookie + session config
+    # ✅ Cookie/session setup
     app.config.update(
-        SESSION_COOKIE_SAMESITE="None",   # allow cookies across localhost:5173 <-> localhost:5000
-        SESSION_COOKIE_SECURE=False,      # True only if using HTTPS
-        SESSION_COOKIE_HTTPONLY=True,     # prevent JS access
+        SESSION_COOKIE_SAMESITE="None",
+        SESSION_COOKIE_SECURE=True,   # ⚠️ Set True since Render uses HTTPS
+        SESSION_COOKIE_HTTPONLY=True,
     )
 
     # ✅ Flask-Login setup
@@ -40,5 +44,6 @@ def create_app():
 
 if __name__ == "__main__":
     app = create_app()
-    # run with localhost not 127.0.0.1 (they count as different origins)
-    app.run(host="localhost", port=5000, debug=True)
+    # ⚠️ Render assigns a dynamic port (available as env var PORT)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)
