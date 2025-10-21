@@ -3,6 +3,7 @@ import LogoHeader from "./LogoHeader";
 import "../global.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+const API_URL = import.meta.env.VITE_API_URL;
 
 const TopBar = ({ username }) => {
   const [showLogout, setShowLogout] = useState(false);
@@ -10,7 +11,7 @@ const TopBar = ({ username }) => {
 
   const handleLogout = async () => {
     try {
-      await axios.post("http://localhost:5000/logout", {}, { withCredentials: true });
+      await axios.post(`${API_URL}/logout`, {}, { withCredentials: true });
       navigate("/"); // redirect to home
     } catch (err) {
       console.error("Logout failed:", err);
