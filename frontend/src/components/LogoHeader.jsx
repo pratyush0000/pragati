@@ -16,7 +16,7 @@ const LogoHeader = ({ username }) => {
   return (
     <header className="logo-header" onClick={handleClick} style={{ cursor: "pointer" }}>
       <img
-        src="/src/assets/pragatilogo.png"
+        src="/pragatilogo.png"
         alt="Pragati Logo"
         className="logo-small"
       />
