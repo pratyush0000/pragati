@@ -4,13 +4,12 @@ import LogoHeader from "../components/LogoHeader";
 import axios from "axios";
 import "./Login.css";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const Login = () => {
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
-
-  // Use env variable for API URL
-  const API_URL = import.meta.env.VITE_API_URL;
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -21,23 +20,19 @@ const Login = () => {
     setMessage("");
 
     try {
-      const res = await axios.post(
-        `${API_URL}/login`,
-        formData,
-        { withCredentials: true } // ✅ include Flask session cookie
-      );
+      const res = await axios.post(`${API_URL}/login`, formData, {
+        withCredentials: true, // important for Flask session
+      });
 
       if (res.status === 200) {
         setMessage("Logged in successfully!");
-        navigate("/dashboard"); // redirect immediately
+        navigate("/dashboard");
       }
     } catch (err) {
       if (err.response) {
-        // Backend returned an error
         setMessage(err.response.data.error || "Invalid credentials");
       } else {
-        // Network error
-        setMessage("Server error. Please try again later.");
+        setMessage("Server error, please try again later.");
       }
     }
   };

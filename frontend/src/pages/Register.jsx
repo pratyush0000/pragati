@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LogoHeader from "../components/LogoHeader";
+import axios from "axios";
 import "./Register.css";
+
 const API_URL = import.meta.env.VITE_API_URL;
-console.log("API_URL is:", API_URL);
 
 const Register = () => {
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
-  console.log("API_URL is:", API_URL);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -17,39 +17,29 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setMessage("");
 
     try {
       // 1️⃣ Register the user
-      const res = await fetch(`${API_URL}/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-        credentials: "include",
+      const res = await axios.post(`${API_URL}/register`, formData, {
+        withCredentials: true,
       });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        setMessage(data.error || "Registration failed");
+      if (res.status !== 201) {
+        setMessage(res.data?.error || "Registration failed");
         return;
       }
 
-      // 2️⃣ Automatically log in after registration
-      const loginRes = await fetch(`${API_URL}/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-        credentials: "include",
+      // 2️⃣ Auto-login after registration
+      const loginRes = await axios.post(`${API_URL}/login`, formData, {
+        withCredentials: true,
       });
 
-      const loginData = await loginRes.json();
-
-      if (loginRes.ok) {
-        localStorage.setItem("username", formData.username); // store username
+      if (loginRes.status === 200) {
         setMessage("Registered and logged in successfully!");
-        setTimeout(() => navigate("/dashboard"), 500);
+        navigate("/dashboard");
       } else {
-        setMessage(loginData.error || "Login failed after registration");
+        setMessage(loginRes.data?.error || "Login failed after registration");
       }
     } catch (err) {
       console.error(err);
