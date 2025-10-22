@@ -33,7 +33,7 @@ const Login = () => {
 
       if (checkRes.data.logged_in) {
         setMessage("Logged in successfully!");
-        navigate("/dashboard");
+        setTimeout(() => navigate("/dashboard"), 200);
       } else {
         setMessage("Login failed. Please try again.");
       }
