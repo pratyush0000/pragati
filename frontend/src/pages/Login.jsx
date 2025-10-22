@@ -21,19 +21,19 @@ const Login = () => {
 
     try {
       const res = await axios.post(`${API_URL}/login`, formData, {
-        withCredentials: true, // important for Flask session
+        withCredentials: true, // include cookies
+        headers: { "Content-Type": "application/json" },
       });
 
       if (res.status === 200) {
         setMessage("Logged in successfully!");
-        navigate("/dashboard");
+        // small delay ensures cookie is set in cross-site scenarios
+        setTimeout(() => navigate("/dashboard"), 100);
       }
     } catch (err) {
-      if (err.response) {
-        setMessage(err.response.data.error || "Invalid credentials");
-      } else {
-        setMessage("Server error, please try again later.");
-      }
+      console.error(err);
+      if (err.response) setMessage(err.response.data.error || "Invalid credentials");
+      else setMessage("Server error, please try again later.");
     }
   };
 
@@ -42,39 +42,18 @@ const Login = () => {
       <LogoHeader />
       <div className="login-box">
         <h2 className="login-title">Welcome Back</h2>
-
         <form className="login-form" onSubmit={handleSubmit}>
-          <label htmlFor="username">
+          <label>
             Username:
-            <input
-              id="username"
-              type="text"
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              required
-            />
+            <input type="text" name="username" value={formData.username} onChange={handleChange} required />
           </label>
-
-          <label htmlFor="password">
+          <label>
             Password:
-            <input
-              id="password"
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
+            <input type="password" name="password" value={formData.password} onChange={handleChange} required />
           </label>
-
           <p className="warning-text">*Please enter correct credentials</p>
-
-          <button type="submit" className="login-btn">
-            Login
-          </button>
+          <button type="submit" className="login-btn">Login</button>
         </form>
-
         {message && <p className="response-msg">{message}</p>}
       </div>
     </div>

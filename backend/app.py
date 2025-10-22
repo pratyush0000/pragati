@@ -3,6 +3,7 @@ from flask_cors import CORS
 from extensions import db, login_manager
 from routes import register_routes
 import os
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 def create_app():
     app = Flask(__name__)
@@ -24,7 +25,7 @@ def create_app():
         app,
         supports_credentials=True,
         origins=[
-            frontend_url,       # production frontend
+            frontend_url,       # deployed frontend
             "http://localhost:5173"  # local dev
         ]
     )
@@ -34,9 +35,14 @@ def create_app():
     # --------------------------
     app.config.update(
         SESSION_COOKIE_SAMESITE="None" if is_prod else "Lax",  # cross-site in prod
-        SESSION_COOKIE_SECURE=is_prod,                          # only secure in prod
+        SESSION_COOKIE_SECURE=is_prod,                         # only secure in prod
         SESSION_COOKIE_HTTPONLY=True,
     )
+
+    # --------------------------
+    # Proxy fix (important for Render / other HTTPS proxies)
+    # --------------------------
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
     # --------------------------
     # Flask-Login setup
