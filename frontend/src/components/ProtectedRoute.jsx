@@ -11,22 +11,32 @@ const ProtectedRoute = ({ children }) => {
   useEffect(() => {
     const checkLogin = async () => {
       try {
+        // ✅ Always include credentials for Flask session cookie
         const res = await axios.get(`${API_URL}/check`, {
-          withCredentials: true, // include Flask session cookie
+          withCredentials: true,
+          headers: { "Content-Type": "application/json" },
         });
+
         setAllowed(res.data.logged_in);
       } catch (err) {
-        console.error(err);
+        console.error("Login check failed:", err);
         setAllowed(false);
       } finally {
         setLoading(false);
       }
     };
+
     checkLogin();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
-  if (!allowed) return <Navigate to="/login" replace />;
+  if (loading) {
+    // Optional: better UX while waiting
+    return <div style={{ textAlign: "center", marginTop: "50px" }}>Checking login status...</div>;
+  }
+
+  if (!allowed) {
+    return <Navigate to="/login" replace />;
+  }
 
   return children;
 };

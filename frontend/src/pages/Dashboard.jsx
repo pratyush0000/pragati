@@ -1,62 +1,45 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import TopBar from "../components/TopBar"; // new component
+import TopBar from "../components/TopBar";
 import { Plus } from "lucide-react";
 import "./Dashboard.css";
-const API_URL = import.meta.env.VITE_API_URL;
 
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Dashboard = () => {
   const [username, setUsername] = useState("");
   const [logs, setLogs] = useState([]);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserAndLogs = async () => {
       try {
-        const checkRes = await axios.get(`${API_URL}/check`, {
-          withCredentials: true,
-        });
+        // ✅ Fetch current user and logs
+        const checkRes = await axios.get(`${API_URL}/check`, { withCredentials: true });
+        setUsername(checkRes.data.username || "");
 
-        if (!checkRes.data.logged_in) {
-          navigate("/login");
-          return;
-        }
-
-        setUsername(checkRes.data.username);
-
-        const logsRes = await axios.get(`${API_URL}/logs`, {
-          withCredentials: true,
-        });
-
-        // setLogs(logsRes.data.reverse());
+        const logsRes = await axios.get(`${API_URL}/logs`, { withCredentials: true });
         setLogs(logsRes.data.sort((a, b) => b.id - a.id));
       } catch (err) {
-        console.error(err);
-        navigate("/login");
+        console.error("Failed to fetch logs:", err);
+        // No redirect here; ProtectedRoute handles it
       }
     };
 
     fetchUserAndLogs();
-  }, [navigate]);
+  }, []);
 
-  const handleNewNote = () => navigate("/new");
-  const handleOpenNote = (id) => navigate(`/note/${id}`);
+  const handleNewNote = () => window.location.href = "/new";
+  const handleOpenNote = (id) => window.location.href = `/note/${id}`;
 
   return (
     <div className="dashboard-container">
-      {/* ✅ Top bar with logo + username */}
       <TopBar username={username} />
-
       <main className="notes-grid">
-        {/* New Note Card */}
         <div className="note-card new-note" onClick={handleNewNote}>
           <Plus className="plus-icon" />
           <span className="new-text">New Note</span>
         </div>
 
-        {/* Existing Notes */}
         {logs.map((log) => (
           <div key={log.id} className="note-card" onClick={() => handleOpenNote(log.id)}>
             <div className="note-content">{log.content.slice(0, 150)}</div>

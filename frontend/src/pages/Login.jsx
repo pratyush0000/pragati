@@ -20,15 +20,22 @@ const Login = () => {
     setMessage("");
 
     try {
-      const res = await axios.post(`${API_URL}/login`, formData, {
-        withCredentials: true, // include cookies
+      // 1️⃣ Send login request
+      await axios.post(`${API_URL}/login`, formData, {
+        withCredentials: true,
         headers: { "Content-Type": "application/json" },
       });
 
-      if (res.status === 200) {
+      // 2️⃣ Immediately check login status (cookie is now registered)
+      const checkRes = await axios.get(`${API_URL}/check`, {
+        withCredentials: true,
+      });
+
+      if (checkRes.data.logged_in) {
         setMessage("Logged in successfully!");
-        // small delay ensures cookie is set in cross-site scenarios
-        setTimeout(() => navigate("/dashboard"), 100);
+        navigate("/dashboard");
+      } else {
+        setMessage("Login failed. Please try again.");
       }
     } catch (err) {
       console.error(err);
