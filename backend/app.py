@@ -17,7 +17,7 @@ def create_app():
     # Environment
     # --------------------------
     is_prod = os.environ.get("FLASK_ENV") == "production"
-    frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:5173")
+    frontend_url = os.environ.get("FRONTEND_URL", "https://pragati-9q2l.onrender.com")
 
     # --------------------------
     # CORS setup
