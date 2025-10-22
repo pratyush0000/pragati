@@ -34,7 +34,8 @@ def create_app():
     app.config.update(
         SESSION_COOKIE_SAMESITE="None" if is_prod else "Lax",
         SESSION_COOKIE_SECURE=is_prod,  # must be True for HTTPS
-        SESSION_COOKIE_HTTPONLY=True
+        SESSION_COOKIE_HTTPONLY=True,
+        SESSION_COOKIE_DOMAIN=".onrender.com"
     )
 
     # --------------------------
