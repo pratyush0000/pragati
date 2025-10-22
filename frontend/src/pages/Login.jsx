@@ -20,22 +20,14 @@ const Login = () => {
     setMessage("");
 
     try {
-      // 1️⃣ Send login request
-      await axios.post(`${API_URL}/login`, formData, {
-        withCredentials: true,
+      const res = await axios.post(`${API_URL}/login`, formData, {
+        withCredentials: true, // crucial for session cookie
         headers: { "Content-Type": "application/json" },
       });
 
-      // 2️⃣ Immediately check login status (cookie is now registered)
-      const checkRes = await axios.get(`${API_URL}/check`, {
-        withCredentials: true,
-      });
-
-      if (checkRes.data.logged_in) {
+      if (res.status === 200) {
         setMessage("Logged in successfully!");
-        setTimeout(() => navigate("/dashboard"), 200);
-      } else {
-        setMessage("Login failed. Please try again.");
+        setTimeout(() => navigate("/dashboard"), 100); // slight delay
       }
     } catch (err) {
       console.error(err);
