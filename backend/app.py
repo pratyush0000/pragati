@@ -5,23 +5,22 @@ from routes import register_routes
 from werkzeug.middleware.proxy_fix import ProxyFix
 import os
 
+
 def create_app():
     app = Flask(__name__)
 
     # --------------------------
-    # Configurations
+    # Base Configurations
     # --------------------------
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///progress.db'
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'supersecretkey')
 
-    # Environment
+    # Determine environment
     is_prod = os.environ.get("FLASK_ENV") == "production"
-
-    # Frontend URL (your actual deployed site)
     frontend_url = os.environ.get("FRONTEND_URL", "https://pragati-9q2l.onrender.com")
 
     # --------------------------
-    # CORS setup — allow React to send cookies
+    # CORS Setup (Allow React frontend)
     # --------------------------
     CORS(
         app,
@@ -32,23 +31,29 @@ def create_app():
     )
 
     # --------------------------
-    # Cookie & Session Settings
+    # Session and Cookie Settings
     # --------------------------
     app.config.update(
-        SESSION_COOKIE_SAMESITE="None" if is_prod else "Lax",   # allow cross-site cookies in prod
-        SESSION_COOKIE_SECURE=True,                             # only over HTTPS
+        SESSION_COOKIE_SAMESITE="None" if is_prod else "Lax",  # Cross-site cookies allowed in prod
+        SESSION_COOKIE_SECURE=is_prod,                         # Only over HTTPS in prod
         SESSION_COOKIE_HTTPONLY=True,
-        # 👇 Important: domain of backend, NOT frontend
-        SESSION_COOKIE_DOMAIN=".onrender.com",                   # both share the same base domain
+        # ❌ Removed SESSION_COOKIE_DOMAIN (caused invalid domain on Render)
+    )
+
+    # ✅ Fix remember_token missing attributes
+    app.config.update(
+        REMEMBER_COOKIE_SAMESITE="None" if is_prod else "Lax",
+        REMEMBER_COOKIE_SECURE=is_prod,
+        REMEMBER_COOKIE_HTTPONLY=True,
     )
 
     # --------------------------
-    # Proxy fix (needed for Render)
+    # Proxy Fix (for Render / HTTPS)
     # --------------------------
     app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
     # --------------------------
-    # Flask-Login setup
+    # Flask-Login Setup
     # --------------------------
     login_manager.init_app(app)
     login_manager.login_view = "login"
